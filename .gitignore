@@ -1,0 +1,4 @@
+#backend
+build/
+/venv/
+/ride_share/__pycache__
