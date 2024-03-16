@@ -21,3 +21,12 @@ def signIn(request):
     return Response({"status":"success", "message": "Login Success"})
   else:
     return Response(status = 401,data={"status":"error", "message": "Login Failed"})
+
+
+@api_view(['GET'])
+def GetFares(fareData):
+  data={
+    'distance':'1',
+    'fare':'50'
+  }
+  return Response(data);
