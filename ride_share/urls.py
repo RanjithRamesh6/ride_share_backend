@@ -17,8 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rs_auth import views
+from rs_auth.views import signUpDriver, signUpNormalUser
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.signIn)
+    path('', views.signIn),    
+    path('api/Driver/create', signUpDriver, name='signUpDriver'),
+    path('api/NormalUser/create', signUpNormalUser, name='signUpNormalUser')
 ]
