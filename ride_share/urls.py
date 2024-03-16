@@ -21,7 +21,7 @@ from rs_auth.views import signUpDriver, signUpNormalUser
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.signIn),    
+    path('api/signin', views.signIn),
     path('api/Driver/create', signUpDriver, name='signUpDriver'),
     path('api/NormalUser/create', signUpNormalUser, name='signUpNormalUser')
 ]

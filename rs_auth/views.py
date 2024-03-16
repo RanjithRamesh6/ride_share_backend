@@ -1,6 +1,7 @@
+import json
 from django.shortcuts import render
 
-from .models import User
+from .models import Normaluser, Driver
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .form import login_form
@@ -10,33 +11,54 @@ from rest_framework import status
 
 from django.contrib.auth import authenticate, login, logout
 
-@api_view(['GET'])
+from django.contrib.auth.hashers import make_password,check_password
+
+
+
+@api_view(['POST'])
 def signIn(request):
-  # form = login_form({"email":"ranjith@gmail.com", "password": "12345678", "confirmPassword": "12345678"})
-  # print(form)
+  json_data = json.loads(request.body)
+  email = json_data.get('email')
+  password = json_data.get('password')
+  type = json_data.get('type')
 
-  email = "ranjith@gmail.com"
-  password = "Ran@1234"
-
-  user = authenticate(request, username = email, password= password)
-  if(user is not None):
-    login(request, user)
-    return Response({"status":"success", "message": "Login Success"})
+  if(type == 'driver'):
+    try:
+      user = Driver.objects.get(email=email)
+    except Driver.DoesNotExist:
+      return Response(data={'status':'error', 'message': 'Invalid EMail'}, status=401)
+    if check_password(password, user.password):
+      return Response(data={'message': 'Login successful'}, status=200)
+    return Response(data={'status':'error', 'message':'Invalid username or password'}, status=400) 
+  
   else:
-    return Response(status = 401,data={"status":"error", "message": "Login Failed"})
+    try:
+      user = Normaluser.objects.get(email=email)
+    except Normaluser.DoesNotExist:
+      return Response(data={'status':'error', 'message': 'Invalid EMail'}, status=401)
+    if check_password(password, user.password):
+      return Response(data={'message': 'Login successful'}, status=200)
+    return Response(data={'status':'error', 'message':'Invalid username or password'}, status=400) 
+
 
 @api_view(['POST'])
 def signUpDriver(request):
   serializer = DriverSerializer(data=request.data)
   if serializer.is_valid():
-    serializer.save()
-    return Response(serializer.data, status=status.HTTP_200_OK)
-  return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)  
+    driver_data = serializer.data
+    password = driver_data.pop('password')
+    hashed_password = make_password(password) 
+    driver = Driver.objects.create(**driver_data, password=hashed_password)
+    return Response(data={"status":"success", "message":"Driver Created Successfully"}, status=201)
+  return Response(serializer.data, status=400)  
 
 @api_view(['POST'])
 def signUpNormalUser(request):
   serializer = NormalUserSerializer(data=request.data)
   if serializer.is_valid():
-    serializer.save()
-    return Response(serializer.data, status=status.HTTP_200_OK)
-  return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+    user_data = serializer.data
+    password = user_data.pop('password')
+    hashed_password = make_password(password) 
+    user = Normaluser.objects.create(**user_data, password=hashed_password)
+    return Response(data={"status":"success", "message":"User Created Successfully"}, status=201)
+  return Response(serializer.data, status=400)
