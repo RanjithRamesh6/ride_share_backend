@@ -32,6 +32,7 @@ urlpatterns = [
     path('api/feedbackbyid', views.feedbackbyid),
     path('api/editfeedback/<int:booking_id>/', views.editFeedback),
     path('api/sign-out', views.logOut),
+    path('api/Bookingsummary', views.BookingSummary)
 ]
 
 

@@ -197,3 +197,12 @@ def driverHistory(request):
     else:
         return Response({"status": "error", "message": "user_id parameter is missing"}, status=400)
     
+@api_view(['GET'])
+def BookingSummary(request):
+  email = request.GET.get('email')  
+  
+  try:
+    booking = Booking.objects.filter(email=email).order_by('-id').first()
+    return Response(data={'status':'success', 'message': 'Booking summary', 'bookingdetails': booking}, status=200)
+  except Booking.DoesNotExist:
+    return Response(data={'status':'error', 'message': 'Error retrieving booking details'}, status=401)
