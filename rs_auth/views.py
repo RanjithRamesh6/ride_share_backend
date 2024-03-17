@@ -19,15 +19,16 @@ from django.contrib.auth.hashers import make_password,check_password
 def signIn(request):
   email = request.GET.get('email')
   password = request.GET.get('password')
-  type = request.GET.get('type')
+  type = request.GET.get('userType')
 
   if(type == 'driver'):
     try:
-      user = Driver.objects.get(email=email)
+      driver = Driver.objects.get(email=email)
     except Driver.DoesNotExist:
       return Response(data={'status':'error', 'message': 'Email Not Registered'}, status=401)
-    if check_password(password, user.password):
-      return Response(data={'message': 'Login successful'}, status=200)
+    if check_password(password, driver.password):
+      driver_details = DriverSerializer(driver).data
+      return Response(data={'status':'success', 'message': 'Login successful', 'driver':driver_details}, status=200)
     return Response(data={'status':'error', 'message':'Invalid username or password'}, status=400) 
   
   else:
@@ -36,7 +37,8 @@ def signIn(request):
     except Normaluser.DoesNotExist:
       return Response(data={'status':'error', 'message': 'Email Not Registered'}, status=401)
     if check_password(password, user.password):
-      return Response(data={'message': 'Login successful'}, status=200)
+      user_details = NormalUserSerializer(user).data
+      return Response(data={'status':'success', 'message': 'Login successful', 'user': user_details}, status=200)
     return Response(data={'status':'error', 'message':'Invalid username or password'}, status=400) 
 
 
