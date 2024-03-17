@@ -1,13 +1,13 @@
 import json
 from django.shortcuts import render
 
-from .models import Normaluser, Driver
+from .models import Normaluser, Driver,VehicleFares
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .form import login_form
-from .serializer import DriverSerializer
-from .serializer import NormalUserSerializer
+from .serializer import DriverSerializer,NormalUserSerializer,FareSerializer
 from rest_framework import status
+from rest_framework import generics
 
 from django.contrib.auth import authenticate, login, logout
 
@@ -68,10 +68,41 @@ def signUpNormalUser(request):
     return Response(data={"status": "error", "message": email_error[0]}, status=400)
   return Response(serializer.data, status=400)
 
-@api_view(['GET'])
-def GetFares(fareData):
-  data={
-    'distance':'1',
-    'fare':'50'
-  }
-  return Response(data);
+
+@api_view(['Get'])
+def calculate_fare(request):
+  distance=request.data.get('distance')
+  # return Response({'vehicle_fares':distance})
+  if distance is not None:
+    try:
+      dist=float(request.data.get('distance'))
+      vType=request.data.get('vehicleType')
+      vehicles=VehicleFares.objects.filter(vehicleType=vType)
+
+      vehicle_fares=[]
+
+      for vehicle in vehicles:
+        base_fare=vehicle.fare
+        tax=calculate_percentage(20,base_fare)
+        total_fare= base_fare+tax*distance
+        vehicle_fares.append({'modelName':vehicle.modelName,'fare':round(total_fare)})
+  
+      return Response({'vehicleFares':vehicle_fares})
+    except ValueError:
+      return Response({'error':ValueError})
+  else:
+      return Response({'error':"Distance can't be null"})
+
+
+  
+
+  
+
+
+
+def calculate_percentage(part,whole):
+  if whole==0:
+    return 0
+  return (part/whole)*100;
+
+

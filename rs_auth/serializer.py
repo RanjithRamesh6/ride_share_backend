@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Driver,Normaluser
+from .models import Driver,Normaluser,VehicleFares
 
 class DriverSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,4 +9,9 @@ class DriverSerializer(serializers.ModelSerializer):
 class NormalUserSerializer(serializers.ModelSerializer):
     class Meta:
         model= Normaluser       
+        fields = '__all__'
+    
+class FareSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= VehicleFares     
         fields = '__all__'
