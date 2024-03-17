@@ -2,11 +2,11 @@ import json
 from django.shortcuts import render
 
 from .serializer import FeedbackSerializer
-from .models import Normaluser, Driver,VehicleFares, Feedback
+from .models import Normaluser, Driver,VehicleFares, Feedback, Booking
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .form import login_form
-from .serializer import DriverSerializer,NormalUserSerializer,FareSerializer
+from .serializer import DriverSerializer,NormalUserSerializer,FareSerializer, BookingSerializer
 from rest_framework import status
 from rest_framework import generics
 
@@ -77,27 +77,26 @@ def signUpNormalUser(request):
 
 @api_view(['Get'])
 def calculate_fare(request):
-  distance=request.data.get('distance')
+  distance=request.query_params.get('distance')
   # return Response({'vehicle_fares':distance})
   if distance is not None:
     try:
-      dist=float(request.data.get('distance'))
-      vType=request.data.get('vehicleType')
-      vehicles=VehicleFares.objects.filter(vehicleType=vType)
+      dist=float(request.query_params.get('distance'))
+      vType=request.query_params.get('vehicleType')
+      vehicle=VehicleFares.objects.get(vehicleType=vType)
 
-      vehicle_fares=[]
-
-      for vehicle in vehicles:
-        base_fare=vehicle.fare
-        tax=calculate_percentage(20,base_fare)
-        total_fare= (base_fare+tax)*dist
-        vehicle_fares.append({'modelName':vehicle.modelName,'fare':round(total_fare)})
+      vehicle_fares={}
+      base_fare=vehicle.fare
+      tax=calculate_percentage(20,base_fare)
+      total_fare= (base_fare+tax)*dist
+      vehicle_fares={'vehicleType':vehicle.vehicleType,'totalfare':round(total_fare),'base_fare':base_fare,'tax':tax,"distance":dist}
   
-      return Response({'vehicleFares':vehicle_fares})
+      return Response(data={'status':'success', 'vehicleFares': vehicle_fares}, status=200)
+    
     except ValueError:
-      return Response({'error':ValueError})
+      return Response(data={'status':'error', 'error': 'Error in executing '}, status=400)
   else:
-      return Response({'error':"Distance can't be null"})
+      return Response(data={'status':'error', 'error': 'Distance is null'}, status=400)
 
 @api_view(['POST'])
 def UserFeedback(request):
@@ -108,12 +107,38 @@ def UserFeedback(request):
   return Response(serializer.data, status=400)
 
 
-
 def calculate_percentage(part,whole):
   if whole==0:
     return 0
   return (part/100)*whole
 
 
+@api_view(['POST'])
+def createBooking(request):
+  serializer = BookingSerializer(data=request.data)
+  try:
+    if serializer.is_valid():
+      serializer.save()
+      return Response({'status':'success', 'booking_data':serializer.data}, status=200)
+    else:
+      return Response(serializer.errors, status=400)
+  except Exception as e:
+    return Response({"status":"error", "message": str(e)}, status=400)
 
+
+@api_view(['GET'])
+def bookingHistory(request):
+    user_id = request.GET.get('user')
+    if user_id is not None:
+        try:
+            bookings = Booking.objects.filter(user=user_id)
+            serializer = BookingSerializer(bookings, many=True)
+            return Response({'status': 'success', 'bookingHistory': serializer.data}, status=200)
+        except Booking.DoesNotExist:
+            return Response({'status': 'error', 'message': 'No bookings found for the user'}, status=404)
+        except Exception as e:
+            return Response({"status": "error", "message": str(e)}, status=400)
+    else:
+        return Response({"status": "error", "message": "user_id parameter is missing"}, status=400)
+  
 

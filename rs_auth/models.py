@@ -11,7 +11,7 @@ class VehicleFares(models.Model):
     }
     Id=models.AutoField(primary_key=True)
     vehicleType=models.IntegerField(choices=VEHICLE_TYPES)
-    modelName=models.TextField(max_length=50)
+    # modelName=models.TextField(max_length=50)
     distance=models.IntegerField()
     fare=models.FloatField()
     created_on=models.DateTimeField(auto_now_add=True)
@@ -52,5 +52,18 @@ class Feedback(models.Model):
     Feedbackcomments =  models.CharField(max_length=255)
     starRating =  models.IntegerField()
 
-
+class Booking(models.Model):
+    user = models.ForeignKey(Normaluser, on_delete=models.CASCADE)
+    pickup_location = models.CharField(max_length=255)
+    drop_location = models.CharField(max_length=255)
+    distance = models.DecimalField(max_digits=10, decimal_places=2)
+    driver_id = models.CharField(max_length=255)
+    vehicletype = models.CharField(max_length=255)
+    vehicleregnum = models.CharField(max_length=255)
+    base_fare = models.DecimalField(max_digits=10, decimal_places=2)
+    tax = models.DecimalField(max_digits=10, decimal_places=2)
+    total_fare = models.DecimalField(max_digits=10, decimal_places=2)
+    booking_status = models.IntegerField() # 0- Ride Booked and waiting for rider to accept, 2- rider accepted ( Order summary page), 3- Ride completed, 4- Ride cancelled 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 

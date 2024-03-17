@@ -25,7 +25,9 @@ urlpatterns = [
     path('api/GetFares',views.calculate_fare),
     path('api/Driver/create', signUpDriver, name='signUpDriver'),
     path('api/NormalUser/create', signUpNormalUser, name='signUpNormalUser'),
-    path('api/Feedback/create', UserFeedback, name='UserFeedback')
+    path('api/Feedback/create', UserFeedback, name='UserFeedback'),
+    path('api/bookRide', views.createBooking),
+    path('api/bookingHistory', views.bookingHistory),
 ]
 
 

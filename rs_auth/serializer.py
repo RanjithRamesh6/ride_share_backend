@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Driver,Normaluser,VehicleFares,Feedback
+from .models import Driver,Normaluser,VehicleFares,Feedback, Booking
 
 class DriverSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,4 +22,9 @@ class FareSerializer(serializers.ModelSerializer):
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model= Feedback       
+        fields = '__all__'
+
+class BookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Booking     
         fields = '__all__'
