@@ -77,19 +77,19 @@ def signUpNormalUser(request):
 
 @api_view(['Get'])
 def calculate_fare(request):
-  distance=request.data.get('distance')
+  distance=request.query_params.get('distance')
   # return Response({'vehicle_fares':distance})
   if distance is not None:
     try:
-      dist=float(request.data.get('distance'))
-      vType=request.data.get('vehicleType')
+      dist=float(request.query_params.get('distance'))
+      vType=request.query_params.get('vehicleType')
       vehicle=VehicleFares.objects.get(vehicleType=vType)
 
-      vehicle_fares=[]
+      vehicle_fares={}
       base_fare=vehicle.fare
       tax=calculate_percentage(20,base_fare)
       total_fare= (base_fare+tax)*dist
-      vehicle_fares.append({'vehicleType':vehicle.vehicleType,'fare':round(total_fare)})
+      vehicle_fares={'vehicleType':vehicle.vehicleType,'totalfare':round(total_fare),'base_fare':base_fare,'tax':tax,"distance":dist}
   
       return Response(data={'status':'success', 'vehicleFares': vehicle_fares}, status=200)
     
