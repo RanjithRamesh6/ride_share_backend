@@ -17,12 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rs_auth import views
-from rs_auth.views import signUpDriver, signUpNormalUser
+from rs_auth.views import signUpDriver, signUpNormalUser,UserFeedback
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/signin', views.signIn),
     path('api/GetFares',views.calculate_fare),
     path('api/Driver/create', signUpDriver, name='signUpDriver'),
-    path('api/NormalUser/create', signUpNormalUser, name='signUpNormalUser')
+    path('api/NormalUser/create', signUpNormalUser, name='signUpNormalUser'),
+    path('api/Feedback/create', UserFeedback, name='UserFeedback')
 ]
+
+

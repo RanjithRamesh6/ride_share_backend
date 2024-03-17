@@ -1,7 +1,8 @@
 import json
 from django.shortcuts import render
 
-from .models import Normaluser, Driver,VehicleFares
+from .serializer import FeedbackSerializer
+from .models import Normaluser, Driver,VehicleFares, Feedback
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .form import login_form
@@ -12,6 +13,9 @@ from rest_framework import generics
 from django.contrib.auth import authenticate, login, logout
 
 from django.contrib.auth.hashers import make_password,check_password
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 
 
@@ -95,16 +99,21 @@ def calculate_fare(request):
   else:
       return Response({'error':"Distance can't be null"})
 
-
-  
-
-  
+@api_view(['POST'])
+def UserFeedback(request):
+  serializer = FeedbackSerializer(data=request.data)
+  if serializer.is_valid():
+    serializer.save()
+    return Response(serializer.data, status=200)
+  return Response(serializer.data, status=400)
 
 
 
 def calculate_percentage(part,whole):
   if whole==0:
     return 0
-  return (part/100)*whole;
+  return (part/100)*whole
+
+
 
 
