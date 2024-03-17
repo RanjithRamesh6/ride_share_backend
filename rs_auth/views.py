@@ -2,11 +2,11 @@ import json
 from django.shortcuts import render
 
 from .serializer import FeedbackSerializer
-from .models import Normaluser, Driver,VehicleFares, Feedback
+from .models import Normaluser, Driver,VehicleFares, Feedback, Booking
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .form import login_form
-from .serializer import DriverSerializer,NormalUserSerializer,FareSerializer
+from .serializer import DriverSerializer,NormalUserSerializer,FareSerializer, BookingSerializer
 from rest_framework import status
 from rest_framework import generics
 
@@ -107,12 +107,20 @@ def UserFeedback(request):
   return Response(serializer.data, status=400)
 
 
-
 def calculate_percentage(part,whole):
   if whole==0:
     return 0
   return (part/100)*whole
 
 
-
-
+@api_view(['POST'])
+def createBooking(request):
+  serializer = BookingSerializer(data=request.data)
+  try:
+    if serializer.is_valid():
+      serializer.save()
+      return Response({'status':'success', 'booking_data':serializer.data}, status=200)
+    else:
+      return Response(serializer.errors, status=400)
+  except Exception as e:
+    return Response({"status":"error", "message": str(e)})
