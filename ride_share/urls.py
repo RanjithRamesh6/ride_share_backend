@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/bookingHistory', views.bookingHistory),
     path('api/driverHistory', views.driverHistory),
     path('api/feedbackbyid', views.feedbackbyid),
+    path('api/editfeedback/<int:booking_id>/', views.editFeedback),
     path('api/sign-out', views.logOut),
 ]
 

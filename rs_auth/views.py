@@ -158,7 +158,24 @@ def feedbackbyid(request):
         return Response({'status': 'success', 'feedback': serializer.data}, status=200)
     else:
         return Response({"status": "error", "message": "Feedback_id parameter missing"}, status=400)
+
+@api_view(['PUT'])
+def editFeedback(request, booking_id):
+    print("feeeed", request.data)
+    try:
+        feedback = Feedback.objects.get(booking_id=booking_id)
+    except Feedback.DoesNotExist:
+        return Response({"status": "error", "message": "Feedback not found"}, status=404)
+
+    if request.method == 'PUT':
+        serializer = FeedbackSerializer(feedback, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'message': 'Feedback updated successfully'}, status=200)
+        else:
+            return Response(serializer.errors, status=400)
     
+
 @api_view(['POST'])
 def logOut(request):
   logout(request)

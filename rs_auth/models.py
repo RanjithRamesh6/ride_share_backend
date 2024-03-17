@@ -51,6 +51,7 @@ class Driver(models.Model):
 class Feedback(models.Model):
     Feedbackcomments =  models.CharField(max_length=255)
     starRating =  models.IntegerField()
+    booking_id =  models.IntegerField()
     user = models.ForeignKey(Normaluser, on_delete=models.CASCADE)
 
 class Booking(models.Model):
