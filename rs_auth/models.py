@@ -46,7 +46,11 @@ class Driver(models.Model):
 
     def __str__(self):
         return self.username    
-
+    
+        
+class Feedback(models.Model):
+    Feedbackcomments =  models.CharField(max_length=255)
+    starRating =  models.IntegerField()
 
 
 
