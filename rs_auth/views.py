@@ -83,7 +83,7 @@ def calculate_fare(request):
     try:
       dist=float(request.data.get('distance'))
       vType=request.data.get('vehicleType')
-      vehicle=VehicleFares.objects.filter(vehicleType=vType)
+      vehicle=VehicleFares.objects.get(vehicleType=vType)
 
       vehicle_fares=[]
       base_fare=vehicle.fare
