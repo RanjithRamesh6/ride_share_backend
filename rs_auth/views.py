@@ -32,7 +32,7 @@ def signIn(request):
       return Response(data={'status':'error', 'message': 'Email Not Registered'}, status=401)
     if check_password(password, driver.password):
       driver_details = DriverSerializer(driver).data
-      return Response(data={'status':'success', 'message': 'Login successful', 'driver':driver_details}, status=200)
+      return Response(data={'status':'success', 'message': 'Login successful', 'driver':driver_details, 'login_allow':False}, status=200)
     return Response(data={'status':'error', 'message':'Invalid username or password'}, status=400) 
   
   else:
@@ -42,7 +42,7 @@ def signIn(request):
       return Response(data={'status':'error', 'message': 'Email Not Registered'}, status=401)
     if check_password(password, user.password):
       user_details = NormalUserSerializer(user).data
-      return Response(data={'status':'success', 'message': 'Login successful', 'user': user_details}, status=200)
+      return Response(data={'status':'success', 'message': 'Login successful', 'user': user_details, 'login_allow':True}, status=200)
     return Response(data={'status':'error', 'message':'Invalid username or password'}, status=400) 
 
 
@@ -158,3 +158,8 @@ def feedbackbyid(request):
         return Response({'status': 'success', 'feedback': serializer.data}, status=200)
     else:
         return Response({"status": "error", "message": "Feedback_id parameter missing"}, status=400)
+    
+@api_view(['POST'])
+def logOut(request):
+  logout(request)
+  return Response({'message':'you are successfully logged out'},status=200)

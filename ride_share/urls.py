@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/bookRide', views.createBooking),
     path('api/bookingHistory', views.bookingHistory),
     path('api/feedbackbyid', views.feedbackbyid),
+    path('api/sign-out', views.logOut),
 ]
 
 
