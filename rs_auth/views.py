@@ -79,21 +79,20 @@ def calculate_fare(request):
     try:
       dist=float(request.data.get('distance'))
       vType=request.data.get('vehicleType')
-      vehicles=VehicleFares.objects.filter(vehicleType=vType)
+      vehicle=VehicleFares.objects.filter(vehicleType=vType)
 
       vehicle_fares=[]
-
-      for vehicle in vehicles:
-        base_fare=vehicle.fare
-        tax=calculate_percentage(20,base_fare)
-        total_fare= (base_fare+tax)*dist
-        vehicle_fares.append({'modelName':vehicle.modelName,'fare':round(total_fare)})
+      base_fare=vehicle.fare
+      tax=calculate_percentage(20,base_fare)
+      total_fare= (base_fare+tax)*dist
+      vehicle_fares.append({'vehicleType':vehicle.vehicleType,'fare':round(total_fare)})
   
-      return Response({'vehicleFares':vehicle_fares})
+      return Response(data={'status':'success', 'vehicleFares': vehicle_fares}, status=200)
+    
     except ValueError:
-      return Response({'error':ValueError})
+      return Response(data={'status':'error', 'error': 'Error in executing '}, status=400)
   else:
-      return Response({'error':"Distance can't be null"})
+      return Response(data={'status':'error', 'error': 'Distance is null'}, status=400)
 
 
   

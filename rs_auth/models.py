@@ -10,8 +10,8 @@ class VehicleFares(models.Model):
         3:"Bike"
     }
     Id=models.AutoField(primary_key=True)
-    vehicleType=models.IntegerField( choices=VEHICLE_TYPES)
-    modelName=models.TextField(max_length=50)
+    vehicleType=models.IntegerField(choices=VEHICLE_TYPES)
+    # modelName=models.TextField(max_length=50)
     distance=models.IntegerField()
     fare=models.FloatField()
     created_on=models.DateTimeField(auto_now_add=True)
