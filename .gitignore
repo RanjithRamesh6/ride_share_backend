@@ -2,4 +2,6 @@
 build/
 /venv/
 /ride_share/__pycache__
-/rs_auth/__pycache__
+/rs_auth/migrations/__pycache__/
+/rs_auth/__pycache__/
+rs_auth/__pycache__/
