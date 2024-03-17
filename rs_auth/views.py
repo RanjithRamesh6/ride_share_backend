@@ -96,12 +96,6 @@ def calculate_fare(request):
       return Response({'error':"Distance can't be null"})
 
 
-  
-
-  
-
-
-
 def calculate_percentage(part,whole):
   if whole==0:
     return 0
