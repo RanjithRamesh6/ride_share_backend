@@ -55,7 +55,7 @@ class Feedback(models.Model):
     user = models.ForeignKey(Normaluser, on_delete=models.CASCADE)
 
 class Booking(models.Model):
-    user = models.ForeignKey(Normaluser, on_delete=models.CASCADE)
+    user = models.IntegerField()
     pickup_location = models.CharField(max_length=255)
     drop_location = models.CharField(max_length=255)
     distance = models.DecimalField(max_digits=10, decimal_places=2)

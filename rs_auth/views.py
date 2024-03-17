@@ -119,7 +119,11 @@ def calculate_percentage(part,whole):
 
 @api_view(['POST'])
 def createBooking(request):
+
+  # request.data.vehicleregnum = "TN1234"
+  # request.data.driver_id = 1
   serializer = BookingSerializer(data=request.data)
+  print('dataaaa', request.data)
   try:
     if serializer.is_valid():
       serializer.save()
@@ -199,10 +203,11 @@ def driverHistory(request):
     
 @api_view(['GET'])
 def BookingSummary(request):
-  email = request.GET.get('email')  
-  
-  try:
-    booking = Booking.objects.filter(email=email).order_by('-id').first()
-    return Response(data={'status':'success', 'message': 'Booking summary', 'bookingdetails': booking}, status=200)
-  except Booking.DoesNotExist:
-    return Response(data={'status':'error', 'message': 'Error retrieving booking details'}, status=401)
+    user_id = request.GET.get('id') 
+    print("User ID:", user_id) 
+    
+    try:
+        booking = Booking.objects.filter(user=user_id).latest('id')
+        return Response(data={'status': 'success', 'message': 'Booking summary', 'bookingdetails': booking}, status=200)
+    except Exception as e:
+        return Response({"status": "error", "message": str(e)}, status=400)
