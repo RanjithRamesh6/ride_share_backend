@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/Feedback/create', UserFeedback, name='UserFeedback'),
     path('api/bookRide', views.createBooking),
     path('api/bookingHistory', views.bookingHistory),
+    path('api/driverHistory', views.driverHistory),
     path('api/feedbackbyid', views.feedbackbyid),
     path('api/sign-out', views.logOut),
 ]

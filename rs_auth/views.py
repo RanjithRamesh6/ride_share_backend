@@ -163,3 +163,20 @@ def feedbackbyid(request):
 def logOut(request):
   logout(request)
   return Response({'message':'you are successfully logged out'},status=200)
+
+
+@api_view(['GET'])
+def driverHistory(request):
+    driver_id = request.GET.get('driver_id')
+    if driver_id is not None:
+        try:
+            bookings = Booking.objects.filter(driver_id=driver_id)
+            serializer = BookingSerializer(bookings, many=True)
+            return Response({'status': 'success', 'bookingHistory': serializer.data}, status=200)
+        except Booking.DoesNotExist:
+            return Response({'status': 'error', 'message': 'No bookings found for the Driver'}, status=404)
+        except Exception as e:
+            return Response({"status": "error", "message": str(e)}, status=400)
+    else:
+        return Response({"status": "error", "message": "user_id parameter is missing"}, status=400)
+    
