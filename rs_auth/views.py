@@ -123,4 +123,22 @@ def createBooking(request):
     else:
       return Response(serializer.errors, status=400)
   except Exception as e:
-    return Response({"status":"error", "message": str(e)})
+    return Response({"status":"error", "message": str(e)}, status=400)
+
+
+@api_view(['GET'])
+def bookingHistory(request):
+    user_id = request.GET.get('user')
+    if user_id is not None:
+        try:
+            bookings = Booking.objects.filter(user=user_id)
+            serializer = BookingSerializer(bookings, many=True)
+            return Response({'status': 'success', 'bookingHistory': serializer.data}, status=200)
+        except Booking.DoesNotExist:
+            return Response({'status': 'error', 'message': 'No bookings found for the user'}, status=404)
+        except Exception as e:
+            return Response({"status": "error", "message": str(e)}, status=400)
+    else:
+        return Response({"status": "error", "message": "user_id parameter is missing"}, status=400)
+  
+
