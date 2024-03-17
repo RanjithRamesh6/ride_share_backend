@@ -77,19 +77,19 @@ def signUpNormalUser(request):
 
 @api_view(['Get'])
 def calculate_fare(request):
-  distance=request.data.get('distance')
+  distance=request.query_params.get('distance')
   # return Response({'vehicle_fares':distance})
   if distance is not None:
     try:
-      dist=float(request.data.get('distance'))
-      vType=request.data.get('vehicleType')
+      dist=float(request.query_params.get('distance'))
+      vType=request.query_params.get('vehicleType')
       vehicle=VehicleFares.objects.get(vehicleType=vType)
 
-      vehicle_fares=[]
+      vehicle_fares={}
       base_fare=vehicle.fare
       tax=calculate_percentage(20,base_fare)
       total_fare= (base_fare+tax)*dist
-      vehicle_fares.append({'vehicleType':vehicle.vehicleType,'fare':round(total_fare)})
+      vehicle_fares={'vehicleType':vehicle.vehicleType,'totalfare':round(total_fare),'base_fare':base_fare,'tax':tax,"distance":dist}
   
       return Response(data={'status':'success', 'vehicleFares': vehicle_fares}, status=200)
     
@@ -123,4 +123,22 @@ def createBooking(request):
     else:
       return Response(serializer.errors, status=400)
   except Exception as e:
-    return Response({"status":"error", "message": str(e)})
+    return Response({"status":"error", "message": str(e)}, status=400)
+
+
+@api_view(['GET'])
+def bookingHistory(request):
+    user_id = request.GET.get('user')
+    if user_id is not None:
+        try:
+            bookings = Booking.objects.filter(user=user_id)
+            serializer = BookingSerializer(bookings, many=True)
+            return Response({'status': 'success', 'bookingHistory': serializer.data}, status=200)
+        except Booking.DoesNotExist:
+            return Response({'status': 'error', 'message': 'No bookings found for the user'}, status=404)
+        except Exception as e:
+            return Response({"status": "error", "message": str(e)}, status=400)
+    else:
+        return Response({"status": "error", "message": "user_id parameter is missing"}, status=400)
+  
+
