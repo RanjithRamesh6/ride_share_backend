@@ -101,10 +101,14 @@ def calculate_fare(request):
 @api_view(['POST'])
 def UserFeedback(request):
   serializer = FeedbackSerializer(data=request.data)
-  if serializer.is_valid():
-    serializer.save()
-    return Response(serializer.data, status=200)
-  return Response(serializer.data, status=400)
+  try:
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=200)
+    else:
+      return Response(serializer.errors, status=400)
+  except Exception as e:
+    return Response({"status":"error", "message": str(e)}, status=400)
 
 
 def calculate_percentage(part,whole):
@@ -140,9 +144,39 @@ def bookingHistory(request):
             return Response({"status": "error", "message": str(e)}, status=400)
     else:
         return Response({"status": "error", "message": "user_id parameter is missing"}, status=400)
+    
+
   
 
+@api_view(['GET'])
+def feedbackbyid(request):
+    feedback_id = request.GET.get('feedback')
+    print(feedback_id)
+    if feedback_id is not None:
+        feedback = Feedback.objects.get(id=feedback_id)
+        serializer = FeedbackSerializer(feedback)
+        return Response({'status': 'success', 'feedback': serializer.data}, status=200)
+    else:
+        return Response({"status": "error", "message": "Feedback_id parameter missing"}, status=400)
+    
 @api_view(['POST'])
 def logOut(request):
   logout(request)
   return Response({'message':'you are successfully logged out'},status=200)
+
+
+@api_view(['GET'])
+def driverHistory(request):
+    driver_id = request.GET.get('driver_id')
+    if driver_id is not None:
+        try:
+            bookings = Booking.objects.filter(driver_id=driver_id)
+            serializer = BookingSerializer(bookings, many=True)
+            return Response({'status': 'success', 'bookingHistory': serializer.data}, status=200)
+        except Booking.DoesNotExist:
+            return Response({'status': 'error', 'message': 'No bookings found for the Driver'}, status=404)
+        except Exception as e:
+            return Response({"status": "error", "message": str(e)}, status=400)
+    else:
+        return Response({"status": "error", "message": "user_id parameter is missing"}, status=400)
+    
