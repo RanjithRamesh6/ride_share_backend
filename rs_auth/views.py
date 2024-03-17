@@ -142,3 +142,7 @@ def bookingHistory(request):
         return Response({"status": "error", "message": "user_id parameter is missing"}, status=400)
   
 
+@api_view(['POST'])
+def logOut(request):
+  logout(request)
+  return Response({'message':'you are successfully logged out'},status=200)
