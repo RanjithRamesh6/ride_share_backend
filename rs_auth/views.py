@@ -84,7 +84,7 @@ def calculate_fare(request):
       for vehicle in vehicles:
         base_fare=vehicle.fare
         tax=calculate_percentage(20,base_fare)
-        total_fare= base_fare+tax*distance
+        total_fare= (base_fare+tax)*dist
         vehicle_fares.append({'modelName':vehicle.modelName,'fare':round(total_fare)})
   
       return Response({'vehicleFares':vehicle_fares})
@@ -103,6 +103,6 @@ def calculate_fare(request):
 def calculate_percentage(part,whole):
   if whole==0:
     return 0
-  return (part/whole)*100;
+  return (part/100)*whole;
 
 
